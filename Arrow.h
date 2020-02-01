@@ -7,7 +7,9 @@
 
 #include "Node.h"
 
-/**
+class Edge;
+
+/*
  * Arrow direactions.
  */
 enum Direction { FWD, BCK };
@@ -17,10 +19,11 @@ enum Direction { FWD, BCK };
  */
 class Arrow {
 public:
-    Arrow(Direction dir, Node* node);
+    Arrow(Edge* edge, Direction dir, Node* node);
 
     Direction dir;
     Node* node;
+    Edge* edge;
 };
 
 #endif //INF421_PI_ALOYSIO_IGOR_ARROW_H

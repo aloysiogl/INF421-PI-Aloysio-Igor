@@ -6,8 +6,8 @@
 
 Edge::Edge(int id, Node *n1, Node *n2) {
     this->id = id;
-    fwd = new Arrow(FWD, n1);
-    bck = new Arrow(BCK, n2);
+    fwd = new Arrow(this, FWD, n1);
+    bck = new Arrow(this, BCK, n2);
 }
 
 Edge::~Edge() {

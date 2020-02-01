@@ -35,6 +35,8 @@ public:
      */
     int sNaive();
 
+    void printTree();
+
 private:
     int numNodes, numEdges;
 
@@ -90,6 +92,11 @@ private:
      * @return: Value for T.
      */
     int tCenterDir(Arrow* arrow);
+
+    void printTreeRecursion(Arrow* root,  int depth);
+
+    std::string getEdgeInfo(Edge* edge);
+
 };
 
 #endif //INF421_PI_ALOYSIO_IGOR_TREE_H

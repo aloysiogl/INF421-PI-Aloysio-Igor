@@ -3,8 +3,10 @@
 //
 
 #include "Arrow.h"
+#include "Edge.h"
 
-Arrow::Arrow(Direction dir, Node* node){
+Arrow::Arrow(Edge* edge, Direction dir, Node* node){
     this->dir = dir;
     this->node = node;
+    this->edge = edge;
 }

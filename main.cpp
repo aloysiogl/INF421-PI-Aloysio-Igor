@@ -48,11 +48,14 @@ int main() {
     cout << t.sNaive() << endl;
     cout << "Time taken: " << (double) (clock() - t1) / CLOCKS_PER_SEC << " s" << endl;
 
-//    // Clearing memory
-//    for (auto e : edges)
-//        delete e;
-//    for (auto n : edges)
-//        delete n;
+  // Printing tree with relevant information
+  t.printTree();
 
-    return 0;
+//  // Clearing memory
+//  for (auto e : edges)
+//    delete e;
+//  for (auto n : edges)
+//    delete n;
+
+  return 0;
 }

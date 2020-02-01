@@ -30,7 +30,7 @@ Tree::Tree(vector<Node *> &ns, vector<Edge *> &es) : nodes(ns), edges(es) {
 int Tree::s() {
     int ans = INT_MAX;
     for (Edge *e : edges)
-        ans = min(ans, tCenterDir(e->fwd) + tCenterDir(e->bck));
+        ans = min(ans, tDir(e->fwd) + tDir(e->bck));
     return ans;
 }
 
@@ -85,14 +85,18 @@ int Tree::tDir(Arrow *arrow) {
 }
 
 void Tree::preprocess(Arrow *arrow) {
-    // Initalizing values (in the beggining there
-    // are no soons connected)
+    // Initializing values (in the beginning there
+    // are no sons connected)
     Node *currentNode = arrow->node;
 
     sumNodes[arrow] = currentNode->weight;
     tNodes[arrow] = 0;
 
     for (Edge *edge: currentNode->edges) {
+        // Its not possible to return
+        if (edge == arrow->edge)
+            continue;
+
         // Getting next node
         Arrow *nextArrow = edge->fwd;
         if (nextArrow->node == currentNode)
@@ -100,6 +104,55 @@ void Tree::preprocess(Arrow *arrow) {
 
         sumNodes[arrow] += sumDir(nextArrow);
         tNodes[arrow] += sumDir(nextArrow) + tDir(nextArrow);
+
+        // Getting next arrow in the path where the center could be
+        if (path[arrow] == nullptr || sumDir(path[nextArrow]) > sumDir(path[arrow]))
+            path[arrow] = nextArrow;
+    }
+}
+
+void Tree::printTree(){
+    Edge* rootEdge = edges[0];
+
+    printTreeRecursion(rootEdge->bck, 0);
+    printTreeRecursion(rootEdge->fwd, 0);
+}
+
+std::string Tree::getEdgeInfo(Edge* edge){
+    Arrow* fwd = edge->fwd;
+    Arrow* bck = edge->bck;
+
+    string soma = "(soma FWD = " + to_string(sumDir(fwd)) + " soma BCK = " + to_string(sumDir(bck)) + ")";
+    string t = "(t FWD = " + to_string(tDir(fwd)) + " t BCK = " + to_string(tDir(bck)) + ")";
+    string pat;
+    if (path[fwd] != nullptr && path[bck] != nullptr)
+        pat = "(path FWD = " + to_string(path[fwd]->edge->id) + " path BCK = " + to_string(path[bck]->edge->id) + ")";
+    else if (path[fwd] != nullptr)
+        pat = "(path FWD = " + to_string(path[fwd]->edge->id)+ ")";
+    else if (path[bck] != nullptr)
+        pat = "(path BCK = " + to_string(path[bck]->edge->id)+ ")";
+    else pat = "nullptr";
+
+    return pat;
+}
+
+void Tree::printTreeRecursion(Arrow* root, int depth){
+    Node* currentNode = root->node;
+
+    for (int i = 0; i < depth; ++i) std::cout << " ";
+
+    std::cout << getEdgeInfo(root->edge) << std::endl;
+
+    for (Edge* edge: currentNode->edges){
+        if (edge == root->edge)
+            continue;
+
+        Arrow *nextArrow = edge->fwd;
+        if (nextArrow->node == currentNode)
+            nextArrow = edge->bck;
+
+        printTreeRecursion(nextArrow, depth+1);
+
     }
 }
 
