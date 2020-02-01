@@ -9,8 +9,8 @@
 using namespace std;
 
 Tree::Tree(vector<Node *> &ns, vector<Edge *> &es) : nodes(ns), edges(es) {
-    numNodes = nodes.size();
-    numEdges = edges.size();
+    numNodes = (int) nodes.size();
+    numEdges = (int) edges.size();
 
     // Initializing tables with -1 which means not yet
     // calculated value

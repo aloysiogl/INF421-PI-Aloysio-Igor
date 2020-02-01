@@ -41,7 +41,7 @@ int main() {
   // Solving problem
   Tree t(nodes, edges);
   cout << t.s() << endl;
-return 0;
+
   // Clearing memory
   for (auto e : edges)
     delete e;
