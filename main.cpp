@@ -8,7 +8,7 @@
 using namespace std;
 
 int main() {
-    freopen("../tests/centers.2.in", "r", stdin);
+    freopen("../tests/centers.10.in", "r", stdin);
 
     int numNodes, numEdges;
     vector<Node *> nodes;

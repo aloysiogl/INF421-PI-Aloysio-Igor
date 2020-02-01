@@ -31,13 +31,8 @@ int Tree::s() {
     int ans = INT_MAX;
     for (Edge *e : edges)
         ans = min(ans, tArrow(e->fwd) + tArrow(e->bck));
-    for (Edge *e : edges){
-//        if (e->id == 0){
-//            cout << tCenterArrow(e->fwd) << endl;
-//        }
-//        std::cout << tCenterArrow(e->fwd) << " " << tCenterArrow(e->bck) << std::endl;
+    for (Edge *e : edges)
         ans = min(ans, tCenterArrow(e->fwd) + tCenterArrow(e->bck));
-    }
 
     return ans;
 }
@@ -141,8 +136,8 @@ std::string Tree::getEdgeInfo(Edge *edge) {
         pat = "(path BCK = " + to_string(path[bck]->edge->id) + ")";
     else pat = "nullptr";
 
-    string centerArro = "(edge = " + to_string(edge->id)+ " sum_back = " + to_string(tCenterArrow(edge->bck)) +
-            " sum_fwd = " + to_string(tCenterArrow(edge->fwd))  + ")";
+    string centerArro = "(edge = " + to_string(edge->id) + " sum_back = " + to_string(tCenterArrow(edge->bck)) +
+                        " sum_fwd = " + to_string(tCenterArrow(edge->fwd)) + ")";
 
     return centerArro;
 }
@@ -178,13 +173,9 @@ int Tree::tCenterArrow(Arrow *arrow) {
         return 0;
     }
 
-//    cout << "node: " <<  arrow->node->weight << "path node: " << path[arrow]->node->weight << endl;
     int tCenterPath = tCenterArrow(path[arrow]);
     parentInPath[path[arrow]] = arrow;
     distanceToCenterInPath[arrow] = distanceToCenterInPath[path[arrow]] + 1;
-    int val = distanceToCenterInPath[path[arrow]];
-
-    // Calling recursion
 
 
     Arrow *currentCenterArrow = centerArrow[path[arrow]];
@@ -193,14 +184,7 @@ int Tree::tCenterArrow(Arrow *arrow) {
     int tWithoutPath = tArrow(arrow) - tArrow(path[arrow]) - sumArrow(path[arrow]);
     int sumWithoutPath = sumArrow(arrow) - sumArrow(path[arrow]);
 
-    int tValue = tWithoutPath + sumWithoutPath * distanceToCenterInPath[arrow] + tCenterPath;
-
-//    cout << "node: " << arrow->node->weight << " current tValue: " << tValue << endl;
-//
-//    cout << "tWithout path: " << tWithoutPath << endl;
-//    cout << "sum Without path: " << sumWithoutPath << endl;
-//    cout << "tCenterPath: " << tCenterPath << endl;
-//    cout << "distanceToCenter in path: " << val << endl;
+    int tValue = tWithoutPath + sumWithoutPath * distanceToCenterInPath[arrow] + tCenterPath;\
 
     while (sumArrow(arrow) > 2 * sumArrow(currentCenterArrow)) {
         tValue += sumArrow(currentCenterArrow);
@@ -210,7 +194,6 @@ int Tree::tCenterArrow(Arrow *arrow) {
     }
 
     centerArrow[arrow] = currentCenterArrow;
-//    cout << "best center for: " << arrow->node->weight << " is: " << currentCenterArrow->node->weight << endl;
     bestAnswerSubtree[arrow] = tValue;
     return tValue;
 }
