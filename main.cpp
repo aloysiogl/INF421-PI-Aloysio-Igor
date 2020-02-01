@@ -8,7 +8,7 @@
 using namespace std;
 
 int main() {
-    freopen("../tests/centers.0.in", "r", stdin);
+    freopen("../tests/centers.2.in", "r", stdin);
 
     int numNodes, numEdges;
     vector<Node *> nodes;
@@ -49,7 +49,7 @@ int main() {
     cout << "Time taken: " << (double) (clock() - t1) / CLOCKS_PER_SEC << " s" << endl;
 
   // Printing tree with relevant information
-  t.printTree();
+//  t.printTree();
 
 //  // Clearing memory
 //  for (auto e : edges)
