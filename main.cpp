@@ -45,7 +45,7 @@ int main() {
     // Solving problem
     Tree t(nodes, edges);
     time_t t1 = clock();
-    cout << t.sNaive() << endl;
+    cout << t.s() << endl;
     cout << "Time taken: " << (double) (clock() - t1) / CLOCKS_PER_SEC << " s" << endl;
 
   // Printing tree with relevant information

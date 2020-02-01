@@ -55,8 +55,8 @@ private:
     // subtree
     std::unordered_map<Arrow*, int> bestAnswerSubtree;
     std::unordered_map<Arrow*, Arrow*> parentInPath;
-    std::unordered_map<Arrow*, int> depthInPath;
-    std::unordered_map<Arrow*, Arrow*> positionInPath;
+    std::unordered_map<Arrow*, int> distanceToCenterInPath;
+    std::unordered_map<Arrow*, Arrow*> centerArrow;
 
     /**
      * Return sum of all nodes that follow an Arrow in its
@@ -64,7 +64,7 @@ private:
      * @param arrow:
      * @return: Sum of nodes.
      */
-    int sumDir(Arrow* arrow);
+    int sumArrow(Arrow *arrow);
 
     /**
      * T(x, e) = sum for all node v in a set V { w(v) * dist(v, x) }
@@ -74,7 +74,7 @@ private:
      * @param arrow:
      * @return: Value for T.
      */
-    int tDir(Arrow* arrow);
+    int tArrow(Arrow *arrow);
 
     /**
      * Calculates the value of the matrixes sumNodes and tNodes for a
@@ -91,7 +91,7 @@ private:
      * @param arrow:
      * @return: Value for T.
      */
-    int tCenterDir(Arrow* arrow);
+    int tCenterArrow(Arrow *arrow);
 
     void printTreeRecursion(Arrow* root,  int depth);
 
