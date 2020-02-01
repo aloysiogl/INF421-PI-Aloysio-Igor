@@ -8,6 +8,8 @@
 using namespace std;
 
 int main() {
+  freopen("../tests/centers.0.in", "r", stdin);
+
   int numNodes, numEdges;
   vector<Node*> nodes;
   vector<Edge*> edges;
@@ -39,9 +41,7 @@ int main() {
   // Solving problem
   Tree t(nodes, edges);
   cout << t.s() << endl;
-
-  return 0;
- 
+return 0;
   // Clearing memory
   for (auto e : edges)
     delete e;
