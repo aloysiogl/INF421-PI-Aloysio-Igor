@@ -7,12 +7,12 @@
 
 #include "Node.h"
 
-/*
+/**
  * Arrow direactions.
  */
 enum Direction { FWD, BCK };
 
-/*
+/**
  * A directed edge.
  */
 class Arrow {

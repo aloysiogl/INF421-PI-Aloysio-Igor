@@ -35,9 +35,34 @@ int Tree::s() {
 }
 
 int Tree::sNaive() {
-    // Calculates distance from every node to every other node.
-    //unordered_map<pair<Node*, Node*>, int> dist;
-    return -1;
+    // Calculates distance from every node to every other node using Floyd-Warshall's
+    // algorithm.
+    vector<vector<int>> dist((unsigned long) numNodes, vector<int>(numNodes, INT_MAX));
+    for (int i = 0; i < numNodes; i++)
+        dist[i][i] = 0;
+    for (Edge* e : edges) {
+        dist[e->fwd->node->id][e->bck->node->id] = 1;
+        dist[e->bck->node->id][e->fwd->node->id] = 1;
+    }
+
+    for (int k = 0; k < numNodes; k++)
+        for (int i = 0; i < numNodes; i++)
+            for (int j = 0; j < numNodes; j++) {
+                if (dist[i][k] < INT_MAX && dist[k][j] < INT_MAX)
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+
+    // Using these distances to calculate S
+    int minS = INT_MAX;
+    for (Node* x : nodes)
+        for (Node* y : nodes) {
+            int s = 0;
+            for (Node *v : nodes)
+                s += v->weight * min(dist[x->id][v->id], dist[y->id][v->id]);
+            minS = min(minS, s);
+        }
+
+    return minS;
 }
 
 int Tree::sumDir(Arrow *arrow) {

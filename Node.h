@@ -9,10 +9,11 @@ class Edge;
 
 #include <vector>
 
-/*
+/**
  * Stores nodes from the tree, with weights and a list of edges.
  */
 struct Node {
+    int id;
     int weight;
     std::vector<Edge*> edges;
 };
