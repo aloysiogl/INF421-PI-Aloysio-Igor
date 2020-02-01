@@ -1,15 +1,32 @@
 #include <iostream>
 #include <vector>
 #include <limits.h>
+#include <unordered_map>
 
 using namespace std;
 
 struct Node;
 
 /*
- * Edges direactions
+ * Edges direactions.
  */
-enum Direction {FWD, BCK};
+enum Direction { FWD, BCK };
+
+// ------------------------------------------------------ //
+
+/*
+ * A directed edge.
+ */
+class Arrow {
+public:
+  Arrow(Direction dir, Node* node){
+    this->dir = dir;
+    this->node = node;
+  }
+
+  Direction dir;
+  Node* node;
+};
 
 // ------------------------------------------------------ //
 
@@ -17,12 +34,17 @@ class Edge {
 public:
   Edge(int id, Node* n1, Node* n2) {
     this->id = id;
-    fwd = n1;
-    bck = n2;
+    fwd = new Arrow(FWD, n1);
+    bck = new Arrow(BCK, n2);
+  }
+
+  ~Edge() {
+    delete fwd;
+    delete bck;
   }
 
   int id;
-  Node *fwd, *bck;
+  Arrow *fwd, *bck;
 };
 
 // ------------------------------------------------------ //
@@ -39,78 +61,129 @@ struct Node {
 
 class Tree {
 public:
-  Tree(vector<Node*> ns, vector<Edge*> es) : nodes(ns), edges(es) {
+  Tree(vector<Node*> &ns, vector<Edge*> &es) : nodes(ns), edges(es) {
     numNodes = nodes.size();
     numEdges = edges.size();
 
-    sumNodes.assign(numEdges, vector<int>(2, -1));
-    tNodes.assign(numEdges, vector<int>(2, -1));
-    path.assign(numEdges, vector<Edge*>(2, nullptr));
-    
-    bestAnswerSubtree.assign(numEdges, vector<int>(2, -1));
-    parentInPath.assign(numEdges, vector<Node*>(2, nullptr));
-    depthInPath.assign(numEdges, vector<int>(2, -1));
-    positionInPath.assign(numEdges, vector<Node*>(2, nullptr));
+    // Initializing tables with -1 which means not yet
+    // calculated value
+    for (Edge* e : edges) {
+      sumNodes[e->fwd] = -1;
+      sumNodes[e->bck] = -1;
+      tNodes[e->fwd] = -1;
+      tNodes[e->bck] = -1;
+
+      bestAnswerSubtree[e->fwd] = -1;
+      bestAnswerSubtree[e->bck] = -1;
+      depthInPath[e->fwd] = -1;
+      depthInPath[e->bck] = -1;
+    }
   }
-  
+
   /*
-   * Calculates the value of the expression S by cutting the tree 
-   * in every possible edge and getting the values of T for the 
-   * centers of the two slices of tree.
+   * Calculates the value of the expression S by cutting the tree
+   * in every possible edge and getting the values of T for the
+   * centers of the two slices of tree. O(n)
    */
   int s() {
     int ans = INT_MAX;
-    for (auto e : edges)
-      ans = min(ans, tCenterDir(e, FWD) + tCenterDir(e, BCK));
+    for (Edge* e : edges)
+      ans = min(ans, tCenterDir(e->fwd) + tCenterDir(e->bck));
     return ans;
+  }
+
+  /*
+   * Naively calculates the value of the expression S in O(n^3), by
+   * first calculating every distance from two nodes, then choosing
+   * every possible two candidates center and calculating possible S.
+   */
+  int sNaive() {
+    // Calculates distance from every node to every other node.
+    //unordered_map<pair<Node*, Node*>, int> dist;
+    return -1;
   }
 
 private:
   int numNodes, numEdges;
-                    
+
   // Tree structure variables
   vector<Node*> &nodes;
   vector<Edge*> &edges;
 
   // Variables associated with sum
   // precalculations
-  vector<vector<int>> sumNodes;
-  vector<vector<int>> tNodes;
-  vector<vector<Edge*>> path;
+  unordered_map<Arrow*, int> sumNodes;
+  unordered_map<Arrow*, int> tNodes;
+  unordered_map<Arrow*, Arrow*> path;
 
-  // Variables associated with search 
-  // for the best single center in a 
+  // Variables associated with search
+  // for the best single center in a
   // subtree
-  vector<vector<int>> bestAnswerSubtree;
-  vector<vector<Node*>> parentInPath;
-  vector<vector<int>> depthInPath;
-  vector<vector<Node*>> positionInPath;
-  
+  unordered_map<Arrow*, int> bestAnswerSubtree;
+  unordered_map<Arrow*, Arrow*> parentInPath;
+  unordered_map<Arrow*, int> depthInPath;
+  unordered_map<Arrow*, Arrow*> positionInPath;
 
   /*
-   * Return sum of all nodes in a specific direction.
+   * Return sum of all nodes that follow an Arrow in its
+   * direction.
    */
-  int sumDir(Edge* edge, Direction dir) {
-    return -1;
+  int sumDir(Arrow* arrow) {
+    // Check if the value has already been calculated
+    if (sumNodes[arrow] >= 0) {
+      return sumNodes[arrow];
+    }
+    else {
+      preprocess(arrow);
+    }
+
+    return sumNodes[arrow];
   }
 
   /*
    * T(x, e) = sum for all node v in a set V { w(v) * dist(v, x) }
    * V = all v different from x and in a subtree given by direction.
-   * Return the value of the expression T(x, e) for the 
-   * node pointed by the edge in a specific direction
+   * Return the value of the expression T(x, e) for the
+   * Node pointed by the Arrow.
    */
-  int tDir(Edge* edge, Direction dir) {
-    return -1;
+  int tDir(Arrow* arrow) {
+    if (tNodes[arrow] >= 0)
+      return tNodes[arrow];
+    else preprocess(arrow);
+
+    return tNodes[arrow];
+  }
+
+  /*
+   * Calculates the value of the matrixes sumNodes and tNodes for a
+   * given Arrow.
+   */
+  void preprocess(Arrow* arrow) {
+    // Initalizing values (in the beggining there
+    // are no soons connected)
+    Node* currentNode = arrow->node;
+
+    sumNodes[arrow] = currentNode->weight;
+    tNodes[arrow] = 0;
+
+    for (Edge* edge: currentNode->edges){
+      // Getting next node
+      Arrow* nextArrow = edge->fwd;
+      if (nextArrow->node == currentNode)
+        nextArrow = edge->bck;
+
+      sumNodes[arrow] += sumDir(nextArrow);
+      tNodes[arrow] += sumDir(nextArrow) + tDir(nextArrow);
+    }
   }
 
   /*
    * T(x, e) = sum for all node v in a set V { w(v) * dist(v, x) }
    * V = all v different from x and in a subtree given by direction.
-   * Calculates the value of T(x, e) for the best single node center in the tree
-   * defined by one edge and one direction.
+   * Calculates the value of T(x, e) for the best single node center in
+   * the tree defined by an Arrow.
    */
-  int tCenterDir(Edge* edge, Direction dir) {
+  int tCenterDir(Arrow* arrow) {
     return -1;
   }
 };
@@ -133,6 +206,7 @@ int main() {
   for (int i = 0; i < numEdges; i++) {
     int x, y;
     cin >> x >> y;
+    x--; y--;
     edges.push_back(new Edge(i, nodes[x], nodes[y]));
     nodes[x]->edges.push_back(edges.back());
     nodes[y]->edges.push_back(edges.back());
@@ -148,13 +222,14 @@ int main() {
   // Solving problem
   Tree t(nodes, edges);
   cout << t.s() << endl;
-  
+
+  return 0;
+ 
   // Clearing memory
   for (auto e : edges)
     delete e;
   for (auto n : edges)
     delete n;
-    
+
   return 0;
 }
-
