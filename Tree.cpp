@@ -12,6 +12,14 @@ Tree::Tree(vector<Node *> &ns, vector<Edge *> &es) : nodes(ns), edges(es) {
     numNodes = (int) nodes.size();
     numEdges = (int) edges.size();
 
+    sumNodes.reserve(numEdges);
+    tNodes.reserve(numEdges);
+    path.reserve(numEdges);
+    bestAnswerSubtree.reserve(numEdges);
+    parentInPath.reserve(numEdges);
+    distanceToCenterInPath.reserve(numEdges);
+    centerArrow.reserve(numEdges);
+
     // Initializing tables with -1 which means not yet
     // calculated value
     for (Edge *e : edges) {

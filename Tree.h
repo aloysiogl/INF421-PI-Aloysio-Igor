@@ -9,6 +9,14 @@
 #include <vector>
 #include "Edge.h"
 
+struct hash {
+    std::size_t operator()(const Arrow* arrow) const {
+        if (arrow == nullptr)
+            return 0;
+        return (size_t) arrow->edge->id;
+    }
+};
+
 class Tree {
 public:
     /**
@@ -46,17 +54,17 @@ private:
 
     // Variables associated with sum
     // precalculations
-    std::unordered_map<Arrow*, int> sumNodes;
-    std::unordered_map<Arrow*, int> tNodes;
-    std::unordered_map<Arrow*, Arrow*> path;
+    std::unordered_map<Arrow*, int, hash> sumNodes;
+    std::unordered_map<Arrow*, int, hash> tNodes;
+    std::unordered_map<Arrow*, Arrow*, hash> path;
 
     // Variables associated with search
     // for the best single center in a
     // subtree
-    std::unordered_map<Arrow*, int> bestAnswerSubtree;
-    std::unordered_map<Arrow*, Arrow*> parentInPath;
-    std::unordered_map<Arrow*, int> distanceToCenterInPath;
-    std::unordered_map<Arrow*, Arrow*> centerArrow;
+    std::unordered_map<Arrow*, int, hash> bestAnswerSubtree;
+    std::unordered_map<Arrow*, Arrow*, hash> parentInPath;
+    std::unordered_map<Arrow*, int, hash> distanceToCenterInPath;
+    std::unordered_map<Arrow*, Arrow*, hash> centerArrow;
 
     /**
      * Return sum of all nodes that follow an Arrow in its
